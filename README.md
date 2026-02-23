@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/25473771/README.md)
 # 🃏 Jogo da Memória
 
 Um jogo da memória feito com HTML, CSS e JavaScript puro — sem instalação, sem frameworks, só abre no navegador!
