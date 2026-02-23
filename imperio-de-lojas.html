@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Império de Lojas 🏪</title>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --panel: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #7d8590;
+    --gold: #ffd700;
+
+    /* Toy store theme */
+    --toy-accent: #ff6eb4;
+    --toy-accent2: #ff3d9a;
+    --toy-bg: #1a0d14;
+
+    /* Pharmacy theme */
+    --ph-accent: #3dd68c;
+    --ph-accent2: #2aab6f;
+    --ph-bg: #0d1a12;
+
+    --accent: var(--toy-accent);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+  }
+
+  /* ===================== SIDEBAR ===================== */
+  .sidebar-nav {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 20px 16px 12px;
+    font-family: 'Lilita One', cursive;
+    font-size: 1.1rem;
+    color: var(--gold);
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .sidebar-logo span { display:block; font-size:.7rem; color:var(--muted); font-family:'Quicksand',sans-serif; font-weight:600; margin-top:2px; }
+
+  .money-box {
+    margin: 12px;
+    background: var(--panel);
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .money-box .label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+  .money-box .amount { font-family:'Lilita One',cursive; font-size:1.4rem; color:var(--gold); }
+
+  .sidebar-section { padding: 8px 12px 4px; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:700; }
+
+  .nav-btn {
+    margin: 3px 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Quicksand', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all .15s;
+    width: calc(100% - 20px);
+  }
+
+  .nav-btn:hover { background:var(--panel); color:var(--text); }
+  .nav-btn.active-toy  { background:rgba(255,110,180,0.15); border-color:var(--toy-accent); color:var(--toy-accent); }
+  .nav-btn.active-ph   { background:rgba(61,214,140,0.15); border-color:var(--ph-accent); color:var(--ph-accent); }
+
+  .nav-btn .nav-icon { font-size:18px; }
+  .nav-btn .nav-badge {
+    margin-left:auto; font-size:10px; padding:2px 6px;
+    border-radius:10px; background:var(--panel);
+  }
+
+  /* Employee section in sidebar */
+  .emp-panel {
+    margin: 8px 10px;
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .emp-title {
+    font-family: 'Lilita One', cursive;
+    font-size:.85rem;
+    color:var(--text);
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .emp-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius:8px;
+    padding:8px;
+    margin-bottom:6px;
+    font-size:11px;
+  }
+
+  .emp-card .emp-name { font-weight:700; display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+  .emp-card .emp-status { color:var(--muted); font-size:10px; }
+  .emp-card .emp-status.working { color:var(--ph-accent); }
+
+  .emp-assign-btns { display:flex; gap:4px; margin-top:6px; }
+  .emp-assign-btn {
+    flex:1; padding:4px 0; border-radius:6px; border:1px solid var(--border);
+    background:var(--panel); color:var(--muted); font-family:'Quicksand',sans-serif;
+    font-size:10px; font-weight:700; cursor:pointer; transition:all .15s;
+  }
+  .emp-assign-btn:hover { border-color:var(--gold); color:var(--gold); }
+  .emp-assign-btn.assigned-toy { border-color:var(--toy-accent); color:var(--toy-accent); background:rgba(255,110,180,0.1); }
+  .emp-assign-btn.assigned-ph  { border-color:var(--ph-accent);  color:var(--ph-accent);  background:rgba(61,214,140,0.1); }
+
+  .hire-btn {
+    width:100%; padding:8px; border-radius:8px; border:2px dashed var(--border);
+    background:transparent; color:var(--muted); font-family:'Quicksand',sans-serif;
+    font-size:11px; font-weight:700; cursor:pointer; transition:all .15s; margin-top:4px;
+  }
+  .hire-btn:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
+  .hire-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+  .sidebar-stats {
+    margin: 6px 10px 16px;
+    display:flex; flex-direction:column; gap:4px;
+  }
+
+  .sstat {
+    background:var(--panel); border-radius:8px; padding:6px 10px;
+    display:flex; justify-content:space-between; align-items:center; font-size:11px;
+  }
+  .sstat .sv { font-weight:700; color:var(--gold); }
+
+  /* ===================== MAIN ===================== */
+  .main-area {
+    margin-left: 220px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Store header */
+  .store-header {
+    padding: 14px 20px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    transition: background .3s;
+  }
+
+  .store-header.toy-header { background:#1a0d14; border-color:rgba(255,110,180,0.3); }
+  .store-header.ph-header  { background:#0d1a12; border-color:rgba(61,214,140,0.3); }
+
+  .store-name {
+    font-family: 'Lilita One', cursive;
+    font-size: 1.5rem;
+  }
+  .toy-header .store-name { color:var(--toy-accent); text-shadow:0 0 20px rgba(255,110,180,.4); }
+  .ph-header  .store-name { color:var(--ph-accent);  text-shadow:0 0 20px rgba(61,214,140,.4); }
+
+  .store-meta { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--muted); }
+  .store-level { padding:4px 12px; border-radius:20px; font-weight:700; font-size:12px; }
+  .toy-header .store-level { background:rgba(255,110,180,.2); color:var(--toy-accent); }
+  .ph-header  .store-level { background:rgba(61,214,140,.2);  color:var(--ph-accent); }
+
+  /* Store view */
+  .store-view { display:none; flex:1; padding:16px; }
+  .store-view.active { display:flex; gap:14px; }
+
+  .store-main { flex:1; display:flex; flex-direction:column; gap:14px; }
+
+  /* Orders */
+  .orders-box {
+    border: 2px solid var(--border);
+    border-radius:14px;
+    padding:14px;
+  }
+  .toy-box  { background:#1a0d14; border-color:rgba(255,110,180,.3); }
+  .ph-box   { background:#0d1a12; border-color:rgba(61,214,140,.3); }
+
+  .box-title {
+    font-family:'Lilita One',cursive; font-size:.95rem; margin-bottom:10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .toy-box .box-title { color:var(--toy-accent); }
+  .ph-box  .box-title { color:var(--ph-accent); }
+
+  .orders-list {
+    display:flex; gap:8px; flex-wrap:wrap; min-height:100px;
+    padding:8px; border-radius:10px; background:rgba(0,0,0,0.3);
+    border:2px dashed var(--border); align-content:flex-start;
+  }
+
+  .order-card {
+    background: var(--surface);
+    border:2px solid var(--border);
+    border-radius:10px; padding:8px 10px;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    min-width:76px; position:relative; overflow:hidden;
+    animation:popCard .4s cubic-bezier(0.175,.885,.32,1.275);
+    transition: border-color .3s, box-shadow .3s;
+  }
+
+  .order-card.urgent-toy { border-color:var(--toy-accent); box-shadow:0 0 12px rgba(255,110,180,.5); }
+  .order-card.urgent-ph  { border-color:var(--ph-accent);  box-shadow:0 0 12px rgba(61,214,140,.5); }
+  .order-card.done-anim  { animation:doneFlash .55s ease forwards; }
+
+  @keyframes doneFlash {
+    0%   { opacity:1; transform:scale(1); }
+    40%  { opacity:1; transform:scale(1.12); background:rgba(255,215,0,.2); }
+    100% { opacity:0; transform:scale(.7); }
+  }
+
+  .oc-customer { font-size:18px; line-height:1; }
+  .oc-emoji    { font-size:22px; line-height:1; }
+  .oc-name     { font-size:9px; font-weight:700; text-align:center; }
+  .oc-price    { font-size:11px; color:var(--gold); font-weight:700; }
+  .oc-time     { font-size:9px; color:var(--muted); }
+
+  .oc-timer-bar  { position:absolute; bottom:0; left:0; right:0; height:4px; background:var(--border); }
+  .oc-timer-fill { height:100%; transition:width 1s linear, background-color .3s; }
+
+  .no-orders { color:var(--muted); font-size:12px; text-align:center; width:100%; padding:20px; font-style:italic; }
+
+  /* Products grid */
+  .products-box { border:2px solid var(--border); border-radius:14px; padding:14px; flex:1; }
+
+  .level-tabs { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:10px; }
+
+  .ltab {
+    padding:3px 9px; border-radius:20px; border:1px solid var(--border);
+    background:transparent; color:var(--muted);
+    font-family:'Quicksand',sans-serif; font-size:11px; font-weight:700;
+    cursor:pointer; transition:all .15s;
+  }
+  .ltab.locked  { opacity:.3; cursor:not-allowed; }
+  .ltab.active-toy { background:var(--toy-accent); border-color:var(--toy-accent); color:#fff; }
+  .ltab.active-ph  { background:var(--ph-accent);  border-color:var(--ph-accent);  color:#fff; }
+  .ltab:not(.locked):not([class*="active"]):hover { border-color:var(--gold); color:var(--gold); }
+
+  .products-grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:8px;
+  }
+
+  .prod-btn {
+    background:var(--panel); border:2px solid var(--border); border-radius:12px;
+    padding:10px 6px; cursor:pointer; text-align:center; transition:all .15s;
+    position:relative; overflow:hidden; color:var(--text); font-family:'Quicksand',sans-serif;
+  }
+  .prod-btn:hover:not(:disabled) { transform:translateY(-3px); }
+  .prod-btn.toy-prod:hover:not(:disabled) { border-color:var(--toy-accent); box-shadow:0 6px 18px rgba(255,110,180,.25); }
+  .prod-btn.ph-prod:hover:not(:disabled)  { border-color:var(--ph-accent);  box-shadow:0 6px 18px rgba(61,214,140,.25); }
+  .prod-btn:active:not(:disabled) { transform:scale(.96); }
+  .prod-btn:disabled { opacity:.4; cursor:not-allowed; }
+  .prod-btn.producing { background:#1a1a2e; }
+  .prod-btn.toy-prod.producing { border-color:var(--toy-accent); }
+  .prod-btn.ph-prod.producing  { border-color:var(--ph-accent); }
+  .prod-btn.has-order-toy { border-color:var(--toy-accent) !important; box-shadow:0 0 10px rgba(255,110,180,.35); }
+  .prod-btn.has-order-ph  { border-color:var(--ph-accent)  !important; box-shadow:0 0 10px rgba(61,214,140,.35); }
+
+  .prod-dot { position:absolute; top:5px; right:5px; width:7px; height:7px; border-radius:50%; display:none; animation:blink 1s infinite; }
+  .toy-prod .prod-dot { background:var(--toy-accent); }
+  .ph-prod  .prod-dot { background:var(--ph-accent); }
+  .prod-btn.has-order-toy .prod-dot,
+  .prod-btn.has-order-ph  .prod-dot { display:block; }
+
+  .prod-emoji { font-size:28px; display:block; margin-bottom:5px; }
+  .prod-name  { font-size:9px; font-weight:700; display:block; margin-bottom:2px; line-height:1.2; }
+  .prod-price { font-size:11px; color:var(--gold); font-weight:700; display:block; margin-bottom:1px; }
+  .prod-time  { font-size:9px; color:var(--muted); display:block; }
+
+  .prod-progress { position:absolute; bottom:0; left:0; right:0; height:4px; background:var(--border); }
+  .prod-bar { height:100%; width:0%; }
+  .toy-prod .prod-bar { background:linear-gradient(90deg, var(--toy-accent), #ffaadd); }
+  .ph-prod  .prod-bar { background:linear-gradient(90deg, var(--ph-accent), #aaffcc); }
+
+  /* Right stats panel */
+  .store-side { width:220px; flex-shrink:0; display:flex; flex-direction:column; gap:10px; }
+
+  .side-panel { background:var(--surface); border:2px solid var(--border); border-radius:14px; padding:13px; }
+  .side-title { font-family:'Lilita One',cursive; font-size:.85rem; color:var(--text); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+
+  .stat-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid var(--border); font-size:11px; }
+  .stat-row:last-child { border:none; }
+  .stat-row .sv { font-weight:700; color:var(--gold); }
+
+  .xp-wrap { margin-bottom:4px; }
+  .xp-lbl  { font-size:10px; color:var(--muted); margin-bottom:3px; display:flex; justify-content:space-between; }
+  .xp-bg   { height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+  .xp-fill { height:100%; border-radius:3px; transition:width .5s; width:0%; }
+  .toy-xp  { background:linear-gradient(90deg, var(--toy-accent), #ffaadd); }
+  .ph-xp   { background:linear-gradient(90deg, var(--ph-accent), #aaffcc); }
+
+  .log { font-size:10px; max-height:120px; overflow-y:auto; display:flex; flex-direction:column; gap:3px; }
+  .log-e { padding:3px 7px; border-radius:5px; background:var(--panel); animation:fadeIn .3s; }
+  .log-e.earn { color:var(--gold); }
+  .log-e.fail { color:#ff6666; }
+
+  /* Float money */
+  .float-money {
+    position:fixed; font-family:'Lilita One',cursive; font-size:1rem; color:var(--gold);
+    pointer-events:none; z-index:999; text-shadow:0 2px 8px rgba(0,0,0,.9);
+    animation:floatUp 1.3s ease forwards;
+  }
+  @keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-70px) scale(1.2)} }
+
+  /* Level up */
+  .levelup-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:300; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
+  .levelup-overlay.show { display:flex; }
+  .levelup-box { padding:28px 46px; border-radius:20px; text-align:center; font-family:'Lilita One',cursive; animation:popCard .5s cubic-bezier(.175,.885,.32,1.275); max-width:90vw; }
+  .levelup-box.toy-up { background:linear-gradient(135deg,#ff3d9a,#ff9de2); color:#1a0a14; box-shadow:0 0 60px rgba(255,60,150,.8); }
+  .levelup-box.ph-up  { background:linear-gradient(135deg,#2aab6f,#7dffc2); color:#0a1a10; box-shadow:0 0 60px rgba(42,171,111,.8); }
+  .levelup-box h2 { font-size:2.2rem; margin-bottom:6px; }
+  .levelup-box p  { font-size:.9rem; margin-bottom:16px; }
+  .levelup-box button { padding:10px 24px; border-radius:10px; border:none; font-family:'Lilita One',cursive; font-size:1rem; cursor:pointer; background:rgba(0,0,0,.2); color:#fff; }
+
+  @keyframes popCard { 0%{transform:scale(.4);opacity:0} 100%{transform:scale(1);opacity:1} }
+  @keyframes blink   { 0%,100%{opacity:1} 50%{opacity:.2} }
+  @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+
+  @media(max-width:800px) {
+    .sidebar-nav { width:64px; }
+    .nav-btn span:not(.nav-icon) { display:none; }
+    .sidebar-logo span, .money-box .label, .sidebar-section, .emp-panel, .sidebar-stats { display:none; }
+    .money-box .amount { font-size:1rem; }
+    .main-area { margin-left:64px; }
+    .store-view.active { flex-direction:column; }
+    .store-side { width:100%; flex-direction:row; flex-wrap:wrap; }
+    .side-panel { flex:1; min-width:140px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR NAV ===================== -->
+<nav class="sidebar-nav">
+  <div class="sidebar-logo">🏪 Império<span>de Lojas</span></div>
+
+  <div class="money-box">
+    <div class="label">💰 Caixa Geral</div>
+    <div class="amount">R$ <span id="moneyDisplay">0,00</span></div>
+  </div>
+
+  <div class="sidebar-section">Lojas</div>
+  <button class="nav-btn active-toy" id="nav-toy" onclick="switchStore('toy')">
+    <span class="nav-icon">🧸</span> Brinquedos
+    <span class="nav-badge" id="badge-toy" style="color:var(--toy-accent)">Nív.1</span>
+  </button>
+  <button class="nav-btn" id="nav-ph" onclick="switchStore('ph')">
+    <span class="nav-icon">💊</span> Farmácia
+    <span class="nav-badge" id="badge-ph" style="color:var(--ph-accent)">Nív.1</span>
+  </button>
+
+  <div class="sidebar-section">Funcionários</div>
+  <div class="emp-panel">
+    <div class="emp-title">👥 Equipe</div>
+    <div id="empList"></div>
+    <button class="hire-btn" id="hireBtn" onclick="hireEmployee()">
+      + Contratar (R$ <span id="hireCost">150</span>)
+    </button>
+  </div>
+
+  <div class="sidebar-section">Resumo</div>
+  <div class="sidebar-stats">
+    <div class="sstat"><span>Total Ganho</span><span class="sv" id="sTotal">R$0</span></div>
+    <div class="sstat"><span>Prods. Feitos</span><span class="sv" id="sCooked">0</span></div>
+    <div class="sstat"><span>Entregues</span><span class="sv" id="sServed">0</span></div>
+  </div>
+</nav>
+
+<!-- ===================== MAIN ===================== -->
+<div class="main-area">
+
+  <!-- STORE HEADER -->
+  <div class="store-header toy-header" id="storeHeader">
+    <div class="store-name" id="storeName">🧸 Loja de Brinquedos</div>
+    <div class="store-meta">
+      <div class="store-level" id="storeLevelBadge">Nível 1</div>
+      <div id="storeXpBar" style="width:160px">
+        <div class="xp-wrap">
+          <div class="xp-lbl"><span id="xpLbl">XP</span><span id="xpPct">0%</span></div>
+          <div class="xp-bg"><div class="xp-fill toy-xp" id="xpFill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== TOY STORE ========== -->
+  <div class="store-view active" id="view-toy">
+    <div class="store-main">
+
+      <div class="orders-box toy-box">
+        <div class="box-title">📋 Pedidos <span id="toy-order-count" style="font-size:11px;color:var(--muted);font-family:'Quicksand';font-weight:600">(0/4)</span></div>
+        <div class="orders-list" id="toy-orders"><div class="no-orders">🧸 Aguardando clientes...</div></div>
+      </div>
+
+      <div class="products-box toy-box">
+        <div class="box-title">🔧 Produzir Brinquedos</div>
+        <div class="level-tabs" id="toy-ltabs"></div>
+        <div class="products-grid" id="toy-grid"></div>
+      </div>
+
+    </div>
+    <div class="store-side">
+      <div class="side-panel">
+        <div class="side-title">📊 Stats da Loja</div>
+        <div class="stat-row"><span>Prods. Feitos</span><span class="sv" id="toy-cooked">0</span></div>
+        <div class="stat-row"><span>Entregues</span><span class="sv" id="toy-served">0</span></div>
+        <div class="stat-row"><span>Perdidos</span><span class="sv" id="toy-failed">0</span></div>
+        <div class="stat-row"><span>Ganho Total</span><span class="sv" id="toy-total">R$0</span></div>
+      </div>
+      <div class="side-panel">
+        <div class="side-title">📜 Histórico</div>
+        <div class="log" id="toy-log"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PHARMACY ========== -->
+  <div class="store-view" id="view-ph">
+    <div class="store-main">
+
+      <div class="orders-box ph-box">
+        <div class="box-title">📋 Pedidos <span id="ph-order-count" style="font-size:11px;color:var(--muted);font-family:'Quicksand';font-weight:600">(0/4)</span></div>
+        <div class="orders-list" id="ph-orders"><div class="no-orders">💊 Aguardando clientes...</div></div>
+      </div>
+
+      <div class="products-box ph-box">
+        <div class="box-title">⚗️ Produzir Medicamentos</div>
+        <div class="level-tabs" id="ph-ltabs"></div>
+        <div class="products-grid" id="ph-grid"></div>
+      </div>
+
+    </div>
+    <div class="store-side">
+      <div class="side-panel">
+        <div class="side-title">📊 Stats da Loja</div>
+        <div class="stat-row"><span>Prods. Feitos</span><span class="sv" id="ph-cooked">0</span></div>
+        <div class="stat-row"><span>Entregues</span><span class="sv" id="ph-served">0</span></div>
+        <div class="stat-row"><span>Perdidos</span><span class="sv" id="ph-failed">0</span></div>
+        <div class="stat-row"><span>Ganho Total</span><span class="sv" id="ph-total">R$0</span></div>
+      </div>
+      <div class="side-panel">
+        <div class="side-title">📜 Histórico</div>
+        <div class="log" id="ph-log"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LEVEL UP OVERLAY -->
+<div class="levelup-overlay" id="levelupOverlay">
+  <div class="levelup-box" id="levelupBox">
+    <div style="font-size:3rem" id="luEmoji">🎉</div>
+    <h2 id="luTitle">Nível 2!</h2>
+    <p id="luDesc">Novos produtos desbloqueados!</p>
+    <button onclick="closeLevelUp()">Continuar! 🚀</button>
+  </div>
+</div>
+
+<script>
+// =============================================
+// PRODUCTS DATA
+// =============================================
+const TOYS = [
+  // Lv1
+  { id:'bolinha',   emoji:'🔴', name:'Bolinha',       price:8,   time:3,  level:1 },
+  { id:'peao',      emoji:'🪀', name:'Pião',          price:12,  time:4,  level:1 },
+  { id:'urso',      emoji:'🧸', name:'Ursinho',       price:18,  time:5,  level:1 },
+  // Lv2
+  { id:'boneca',    emoji:'🪆', name:'Boneca',        price:25,  time:6,  level:2 },
+  { id:'carrinho',  emoji:'🚗', name:'Carrinho',      price:22,  time:5,  level:2 },
+  { id:'lego',      emoji:'🧱', name:'Lego',          price:35,  time:8,  level:2 },
+  // Lv3
+  { id:'robo',      emoji:'🤖', name:'Robô',          price:50,  time:10, level:3 },
+  { id:'videogame', emoji:'🎮', name:'Videogame',     price:80,  time:14, level:3 },
+  { id:'drone',     emoji:'🚁', name:'Drone',         price:90,  time:15, level:3 },
+  // Lv4
+  { id:'telescopio',emoji:'🔭', name:'Telescópio',   price:110, time:17, level:4 },
+  { id:'magica',    emoji:'🎩', name:'Kit Mágica',    price:70,  time:12, level:4 },
+  { id:'pintura',   emoji:'🎨', name:'Kit Pintura',   price:60,  time:11, level:4 },
+  // Lv5
+  { id:'raquete',   emoji:'🏓', name:'Ping-Pong',     price:85,  time:13, level:5 },
+  { id:'arco',      emoji:'🏹', name:'Arco e Flecha', price:100, time:16, level:5 },
+  { id:'binoculo',  emoji:'🔬', name:'Microscópio',  price:140, time:20, level:5 },
+];
+
+const PHARMA = [
+  // Lv1
+  { id:'curativo',  emoji:'🩹', name:'Curativo',      price:6,   time:2,  level:1 },
+  { id:'vitamina',  emoji:'💊', name:'Vitamina',      price:10,  time:3,  level:1 },
+  { id:'soro',      emoji:'🧴', name:'Soro',          price:8,   time:3,  level:1 },
+  // Lv2
+  { id:'xarope',    emoji:'🫙', name:'Xarope',        price:20,  time:5,  level:2 },
+  { id:'pomada',    emoji:'🧪', name:'Pomada',        price:18,  time:4,  level:2 },
+  { id:'termometro',emoji:'🌡️', name:'Termômetro',   price:28,  time:6,  level:2 },
+  // Lv3
+  { id:'inhaler',   emoji:'💨', name:'Inalador',      price:45,  time:9,  level:3 },
+  { id:'oculos',    emoji:'👓', name:'Óculos',        price:60,  time:11, level:3 },
+  { id:'esfigmo',   emoji:'🩺', name:'Esfigmo.',     price:55,  time:10, level:3 },
+  // Lv4
+  { id:'antibio',   emoji:'⚗️', name:'Antibiótico',  price:80,  time:14, level:4 },
+  { id:'injecao',   emoji:'💉', name:'Injeção',      price:70,  time:12, level:4 },
+  { id:'monitor',   emoji:'📟', name:'Monitor Card.',price:120, time:18, level:4 },
+  // Lv5
+  { id:'raio',      emoji:'☢️', name:'Raio-X',       price:160, time:22, level:5 },
+  { id:'ecg',       emoji:'📈', name:'ECG',           price:140, time:20, level:5 },
+  { id:'cirurgia',  emoji:'🔬', name:'Kit Cirurgia',price:200, time:25, level:5 },
+];
+
+const LEVEL_XP_TOY = [0,0,150,400,900,1800];
+const LEVEL_XP_PH  = [0,0,150,400,900,1800];
+
+// =============================================
+// STATE
+// =============================================
+let money = 0, totalEarned = 0, totalCooked = 0, totalServed = 0;
+let audioCtx = null;
+let currentStore = 'toy';
+
+// Per-store state
+const S = {
+  toy: {
+    level:1, xp:0, cooked:0, served:0, failed:0,
+    orders:[], producing:{}, orderId:0,
+    maxOrders:4, orderTime:28, speedMult:1, priceMult:1,
+    viewLevel:1,
+  },
+  ph: {
+    level:1, xp:0, cooked:0, served:0, failed:0,
+    orders:[], producing:{}, orderId:0,
+    maxOrders:4, orderTime:28, speedMult:1, priceMult:1,
+    viewLevel:1,
+  }
+};
+
+// Employees
+let employees = [];
+let hireCost = 150;
+const MAX_EMP = 5;
+
+const EMP_NAMES = ['Ana','Bruno','Carol','Diego','Elena','Felipe','Gabi','Hugo'];
+const EMP_EMOJIS = ['👩','👨','👩‍🦰','🧔','👩‍🦱','👨‍🦲','🧑','👩‍🦳'];
+const CUSTOMERS = ['👴','👵','🧑','👦','👧','🤵','👩','👨','🧔','👸','🕵️','👮'];
+
+function products(store) { return store === 'toy' ? TOYS : PHARMA; }
+function levelXp(store)  { return store === 'toy' ? LEVEL_XP_TOY : LEVEL_XP_PH; }
+function storeClass(store){ return store === 'toy' ? 'toy' : 'ph'; }
+function storeAccent(store){ return store === 'toy' ? 'var(--toy-accent)' : 'var(--ph-accent)'; }
+
+// =============================================
+// AUDIO
+// =============================================
+function getAC() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playBell(store) {
+  try {
+    const ctx = getAC();
+    const freqs = store === 'toy' ? [1318,1567,2093] : [880,1047,1318];
+    freqs.forEach((f,i) => setTimeout(() => {
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='sine'; o.frequency.setValueAtTime(f,ctx.currentTime);
+      g.gain.setValueAtTime(.25,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.8);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime+.8);
+    },i*130));
+  } catch(e){}
+}
+function playLvUp() {
+  try {
+    const ctx = getAC();
+    [523,659,784,1047].forEach((f,i)=>setTimeout(()=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='triangle'; o.frequency.setValueAtTime(f,ctx.currentTime);
+      g.gain.setValueAtTime(.2,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.4);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime+.4);
+    },i*160));
+  } catch(e){}
+}
+function playFail() {
+  try {
+    const ctx=getAC(),o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type='sawtooth'; o.frequency.setValueAtTime(200,ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(80,ctx.currentTime+.3);
+    g.gain.setValueAtTime(.15,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.3);
+    o.start(ctx.currentTime); o.stop(ctx.currentTime+.3);
+  } catch(e){}
+}
+
+// =============================================
+// INIT
+// =============================================
+function init() {
+  renderLevelTabs('toy'); renderLevelTabs('ph');
+  renderProducts('toy');  renderProducts('ph');
+  renderEmployees();
+  startOrders('toy'); startOrders('ph');
+  setInterval(()=>{ tickOrders('toy'); tickOrders('ph'); }, 1000);
+  setInterval(()=>{ renderEmployees(); updateXpBar(); }, 1200);
+  switchStore('toy');
+}
+
+// =============================================
+// STORE SWITCH
+// =============================================
+function switchStore(store) {
+  currentStore = store;
+  document.getElementById('view-toy').classList.toggle('active', store==='toy');
+  document.getElementById('view-ph').classList.toggle('active', store==='ph');
+
+  const hdr = document.getElementById('storeHeader');
+  hdr.className = 'store-header ' + (store==='toy'?'toy-header':'ph-header');
+
+  document.getElementById('storeName').textContent = store==='toy' ? '🧸 Loja de Brinquedos' : '💊 Farmácia';
+
+  document.getElementById('nav-toy').className = 'nav-btn' + (store==='toy'?' active-toy':'');
+  document.getElementById('nav-ph').className  = 'nav-btn' + (store==='ph'?' active-ph':'');
+
+  const xpFill = document.getElementById('xpFill');
+  xpFill.className = 'xp-fill ' + (store==='toy'?'toy-xp':'ph-xp');
+
+  updateXpBar();
+}
+
+// =============================================
+// LEVEL TABS
+// =============================================
+function renderLevelTabs(store) {
+  const s = S[store], maxLv = products(store).reduce((m,p)=>Math.max(m,p.level),1);
+  const container = document.getElementById(store+'-ltabs');
+  container.innerHTML='';
+  for(let l=1;l<=maxLv;l++){
+    const btn=document.createElement('button');
+    const locked=l>s.level, active=l===s.viewLevel;
+    btn.className='ltab'+(locked?' locked':'')+(active?' active-'+store:'');
+    btn.textContent='Nív.'+l;
+    if(!locked) btn.onclick=()=>{ s.viewLevel=l; renderLevelTabs(store); renderProducts(store); };
+    container.appendChild(btn);
+  }
+}
+
+// =============================================
+// PRODUCTS
+// =============================================
+function getPrice(store,prod){ return prod.price * S[store].priceMult; }
+
+function renderProducts(store) {
+  const s=S[store], grid=document.getElementById(store+'-grid');
+  const orderIds=new Set(s.orders.map(o=>o.prod.id));
+  grid.innerHTML='';
+  products(store).filter(p=>p.level===s.viewLevel).forEach(prod=>{
+    const unlocked=prod.level<=s.level;
+    const isProd=!!s.producing[prod.id];
+    const hasOrd=orderIds.has(prod.id);
+    const sc=storeClass(store);
+    const btn=document.createElement('button');
+    btn.className='prod-btn '+sc+'-prod'+(isProd?' producing':'')+(hasOrd&&!isProd?' has-order-'+sc:'');
+    btn.id='prod-'+store+'-'+prod.id;
+    btn.disabled=!unlocked||isProd;
+    const cookT=Math.ceil(prod.time*s.speedMult);
+    btn.innerHTML=`
+      <div class="prod-dot"></div>
+      <span class="prod-emoji">${prod.emoji}</span>
+      <span class="prod-name">${prod.name}</span>
+      <span class="prod-price">R$ ${getPrice(store,prod).toFixed(0)}</span>
+      <span class="prod-time">⏱ ${cookT}s</span>
+      <div class="prod-progress"><div class="prod-bar" id="bar-${store}-${prod.id}"></div></div>
+    `;
+    if(unlocked&&!isProd) btn.onclick=()=>produce(store,prod);
+    grid.appendChild(btn);
+  });
+}
+
+function produce(store,prod,fromEmployee) {
+  const s=S[store];
+  if(s.producing[prod.id]) return;
+  s.producing[prod.id]=true;
+  renderProducts(store);
+
+  // Speed bonus if employee assigned to this store
+  const empBonus = employees.filter(e=>e.store===store&&e.hired).length;
+  const speedBonus = 1 / (1 + empBonus * 0.4);
+  const duration = prod.time * s.speedMult * speedBonus * 1000;
+  const start = Date.now();
+
+  const iv=setInterval(()=>{
+    const pct=Math.min(((Date.now()-start)/duration)*100,100);
+    const bar=document.getElementById('bar-'+store+'-'+prod.id);
+    if(bar) bar.style.width=pct+'%';
+    if(Date.now()-start>=duration){ clearInterval(iv); finishProd(store,prod); }
+  },60);
+}
+
+function finishProd(store,prod) {
+  const s=S[store];
+  delete s.producing[prod.id];
+  s.cooked++; totalCooked++;
+  document.getElementById(store+'-cooked').textContent=s.cooked;
+  document.getElementById('sCooked').textContent=totalCooked;
+
+  const matchIdx=s.orders.findIndex(o=>o.prod.id===prod.id);
+  if(matchIdx!==-1){
+    const order=s.orders[matchIdx];
+    const card=document.getElementById('oc-'+store+'-'+order.id);
+    if(card){
+      card.classList.add('done-anim');
+      setTimeout(()=>{ s.orders.splice(matchIdx,1); renderOrders(store); renderProducts(store); },560);
+    } else { s.orders.splice(matchIdx,1); renderOrders(store); renderProducts(store); }
+    const earned=getPrice(store,prod);
+    earnMoney(store,earned);
+    s.served++; totalServed++;
+    playBell(store);
+    document.getElementById(store+'-served').textContent=s.served;
+    document.getElementById('sServed').textContent=totalServed;
+    addLog(store,`✅ ${prod.emoji} ${prod.name} entregue! +R$${earned.toFixed(0)}`,'earn');
+    showFloat('+R$'+earned.toFixed(0));
+  } else {
+    const half=getPrice(store,prod)*.5;
+    earnMoney(store,half);
+    addLog(store,`📦 ${prod.emoji} sem pedido —+R$${half.toFixed(0)}`,'earn');
+    showFloat('+R$'+half.toFixed(0));
+    renderProducts(store);
+  }
+  checkLevelUp(store);
+
+  // Employee auto-produce: pick a product with a matching order
+  employees.filter(e=>e.store===store&&e.hired).forEach(()=>{
+    const avail=products(store).filter(p=>p.level<=s.level&&!s.producing[p.id]);
+    const withOrder=avail.filter(p=>s.orders.some(o=>o.prod.id===p.id));
+    const target=withOrder.length>0 ? withOrder[0] : avail[Math.floor(Math.random()*avail.length)];
+    if(target) setTimeout(()=>produce(store,target,true),800+Math.random()*1200);
+  });
+}
+
+// =============================================
+// ORDERS
+// =============================================
+function startOrders(store) {
+  function spawn(){
+    const s=S[store];
+    if(s.orders.length<s.maxOrders){
+      const avail=products(store).filter(p=>p.level<=s.level);
+      const prod=avail[Math.floor(Math.random()*avail.length)];
+      const cust=CUSTOMERS[Math.floor(Math.random()*CUSTOMERS.length)];
+      s.orders.push({ id:s.orderId++, prod, customer:cust, timeLeft:Math.round(s.orderTime), maxTime:Math.round(s.orderTime) });
+      renderOrders(store); renderProducts(store);
+    }
+    setTimeout(spawn, 3500+Math.random()*3500);
+  }
+  setTimeout(spawn, store==='toy'?1500:2500);
+}
+
+function tickOrders(store) {
+  const s=S[store]; let expired=false;
+  s.orders.forEach(o=>{
+    o.timeLeft=Math.max(0,o.timeLeft-1);
+    if(o.timeLeft===0){
+      s.failed++; expired=true;
+      document.getElementById(store+'-failed').textContent=s.failed;
+      addLog(store,`❌ ${o.customer} foi embora! Perdeu ${o.prod.emoji}`,'fail');
+      playFail();
+    }
+  });
+  if(expired){ s.orders=s.orders.filter(o=>o.timeLeft>0); renderProducts(store); }
+  renderOrders(store);
+}
+
+function renderOrders(store) {
+  const s=S[store];
+  const list=document.getElementById(store+'-orders');
+  const sc=storeClass(store);
+  document.getElementById(store+'-order-count').textContent=`(${s.orders.length}/${s.maxOrders})`;
+
+  if(s.orders.length===0){
+    list.innerHTML=`<div class="no-orders">${store==='toy'?'🧸':'💊'} Nenhum pedido...</div>`;
+    return;
+  }
+
+  // Remove expired cards
+  [...list.querySelectorAll('.order-card')].forEach(card=>{
+    const id=parseInt(card.id.split('-').pop());
+    if(!s.orders.find(o=>o.id===id)&&!card.classList.contains('done-anim')) card.remove();
+  });
+  const noMsg=list.querySelector('.no-orders'); if(noMsg) noMsg.remove();
+
+  s.orders.forEach(o=>{
+    const pct=(o.timeLeft/o.maxTime)*100;
+    const col=pct>50?'#44dd88':pct>25?'#ffaa00':'#ff4444';
+    const urgent=pct<35;
+    let card=document.getElementById('oc-'+store+'-'+o.id);
+    if(!card){
+      card=document.createElement('div');
+      card.id='oc-'+store+'-'+o.id;
+      card.className='order-card'+(urgent?' urgent-'+sc:'');
+      card.innerHTML=`
+        <div class="oc-customer">${o.customer}</div>
+        <div class="oc-emoji">${o.prod.emoji}</div>
+        <div class="oc-name">${o.prod.name}</div>
+        <div class="oc-price">R$ ${getPrice(store,o.prod).toFixed(0)}</div>
+        <div class="oc-time" id="oct-${store}-${o.id}">${o.timeLeft}s</div>
+        <div class="oc-timer-bar"><div class="oc-timer-fill" id="ocf-${store}-${o.id}" style="width:${pct}%;background:${col}"></div></div>
+      `;
+      list.appendChild(card);
+    } else {
+      card.className='order-card'+(urgent?' urgent-'+sc:'')+(card.classList.contains('done-anim')?' done-anim':'');
+      const t=document.getElementById('oct-'+store+'-'+o.id);
+      const f=document.getElementById('ocf-'+store+'-'+o.id);
+      if(t) t.textContent=o.timeLeft+'s';
+      if(f){ f.style.width=pct+'%'; f.style.backgroundColor=col; }
+    }
+  });
+}
+
+// =============================================
+// MONEY
+// =============================================
+function earnMoney(store,amount){
+  money+=amount; totalEarned+=amount;
+  S[store].xp+=amount;
+  document.getElementById('moneyDisplay').textContent=money.toFixed(2).replace('.',',');
+  document.getElementById(store+'-total').textContent='R$'+Math.floor(S[store].xp>0?totalEarned:0);
+  document.getElementById('sTotal').textContent='R$'+Math.floor(totalEarned);
+  // update individual store total
+  const toyXp=S['toy'].cooked; // use earned per store
+  document.getElementById('toy-total').textContent='R$'+Math.floor(S['toy'].xp||0);
+  document.getElementById('ph-total').textContent='R$'+Math.floor(S['ph'].xp||0);
+}
+
+function showFloat(text){
+  const el=document.createElement('div');
+  el.className='float-money'; el.textContent=text;
+  el.style.left=(Math.random()*50+30)+'%'; el.style.top='60px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1400);
+}
+
+// =============================================
+// XP & LEVEL
+// =============================================
+function updateXpBar(){
+  const store=currentStore, s=S[store];
+  const xpArr=levelXp(store);
+  const badge=document.getElementById('storeLevelBadge');
+  badge.textContent='Nível '+s.level;
+  document.getElementById('badge-toy').textContent='Nív.'+S['toy'].level;
+  document.getElementById('badge-ph').textContent='Nív.'+S['ph'].level;
+
+  if(s.level>=xpArr.length-1){
+    document.getElementById('xpLbl').textContent='Nível Máximo 🏆';
+    document.getElementById('xpPct').textContent='';
+    document.getElementById('xpFill').style.width='100%';
+    return;
+  }
+  const cur=xpArr[s.level], next=xpArr[s.level+1];
+  const earned=s.xp, rel=Math.max(0,earned-cur), pct=Math.min((rel/(next-cur))*100,100);
+  document.getElementById('xpFill').style.width=pct+'%';
+  document.getElementById('xpLbl').textContent=`XP: ${Math.floor(rel)}/${next-cur}`;
+  document.getElementById('xpPct').textContent=Math.floor(pct)+'%';
+}
+
+function checkLevelUp(store){
+  const s=S[store], xpArr=levelXp(store);
+  if(s.level>=xpArr.length-1) return;
+  const newLv=xpArr.filter((x,i)=>i>0&&s.xp>=x).length;
+  if(newLv>s.level){
+    s.level=newLv;
+    playLvUp();
+    renderLevelTabs(store); renderProducts(store); updateXpBar();
+    addLog(store,`🎉 Nível ${newLv}! Novos produtos!`,'earn');
+    const newProds=products(store).filter(p=>p.level===newLv).map(p=>p.emoji+' '+p.name).join(', ');
+    const box=document.getElementById('levelupBox');
+    box.className='levelup-box '+(store==='toy'?'toy-up':'ph-up');
+    document.getElementById('luEmoji').textContent=store==='toy'?'🧸':'💊';
+    document.getElementById('luTitle').textContent=(store==='toy'?'Brinquedos':'Farmácia')+' Nível '+newLv+'!';
+    document.getElementById('luDesc').textContent=newProds?'Novos: '+newProds:'Você está arrasando!';
+    document.getElementById('levelupOverlay').classList.add('show');
+  }
+}
+
+function closeLevelUp(){ document.getElementById('levelupOverlay').classList.remove('show'); }
+
+// =============================================
+// EMPLOYEES
+// =============================================
+function hireEmployee(){
+  if(money<hireCost||employees.length>=MAX_EMP) return;
+  money-=hireCost;
+  document.getElementById('moneyDisplay').textContent=money.toFixed(2).replace('.',',');
+  const idx=employees.length;
+  employees.push({
+    id:idx,
+    name:EMP_NAMES[idx%EMP_NAMES.length],
+    emoji:EMP_EMOJIS[idx%EMP_EMOJIS.length],
+    store:null,
+    hired:true,
+  });
+  hireCost=Math.round(hireCost*1.8);
+  document.getElementById('hireCost').textContent=hireCost;
+  addLog('toy',`👷 ${employees[idx].name} foi contratado!`,'earn');
+  renderEmployees();
+}
+
+function assignEmployee(empId, store){
+  const emp=employees[empId];
+  if(!emp) return;
+  const wasStore=emp.store;
+  emp.store = emp.store===store ? null : store; // toggle
+  renderEmployees();
+
+  if(emp.store){
+    addLog(emp.store, `${emp.emoji} ${emp.name} foi para ${emp.store==='toy'?'Brinquedos':'Farmácia'}!`,'earn');
+    // Start working immediately
+    const s=S[emp.store];
+    const avail=products(emp.store).filter(p=>p.level<=s.level&&!s.producing[p.id]);
+    const withOrder=avail.filter(p=>s.orders.some(o=>o.prod.id===p.id));
+    const target=withOrder.length>0?withOrder[0]:avail[Math.floor(Math.random()*avail.length)];
+    if(target) setTimeout(()=>produce(emp.store,target,true),600);
+  }
+}
+
+function renderEmployees(){
+  const list=document.getElementById('empList');
+  list.innerHTML='';
+  if(employees.length===0){
+    const msg=document.createElement('div');
+    msg.style.cssText='font-size:11px;color:var(--muted);text-align:center;padding:8px;font-style:italic;';
+    msg.textContent='Nenhum funcionário ainda';
+    list.appendChild(msg);
+  }
+  employees.forEach(emp=>{
+    const card=document.createElement('div');
+    card.className='emp-card';
+    const statusTxt = emp.store
+      ? `Trabalhando em ${emp.store==='toy'?'🧸 Brinquedos':'💊 Farmácia'}`
+      : 'Ocioso';
+    card.innerHTML=`
+      <div class="emp-name">${emp.emoji} ${emp.name}</div>
+      <div class="emp-status ${emp.store?'working':''}">${statusTxt}</div>
+      <div class="emp-assign-btns">
+        <button class="emp-assign-btn ${emp.store==='toy'?'assigned-toy':''}" onclick="assignEmployee(${emp.id},'toy')">🧸 Brinq.</button>
+        <button class="emp-assign-btn ${emp.store==='ph'?'assigned-ph':''}"  onclick="assignEmployee(${emp.id},'ph')">💊 Farm.</button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  const hBtn=document.getElementById('hireBtn');
+  hBtn.disabled=money<hireCost||employees.length>=MAX_EMP;
+  hBtn.textContent=employees.length>=MAX_EMP?'Equipe Completa ✓':`+ Contratar (R$ ${hireCost})`;
+  if(employees.length>=MAX_EMP){const s=document.getElementById('hireCost');if(s)s.textContent=hireCost;}
+}
+
+// =============================================
+// LOG
+// =============================================
+function addLog(store,text,type){
+  const log=document.getElementById(store+'-log');
+  const e=document.createElement('div');
+  e.className='log-e '+(type||''); e.textContent=text;
+  log.insertBefore(e,log.firstChild);
+  if(log.children.length>30) log.removeChild(log.lastChild);
+}
+
+// =============================================
+// FLOAT
+// =============================================
+document.addEventListener('click',()=>{ try{getAC().resume();}catch(e){} },{once:true});
+
+init();
+</script>
+</body>
+</html>
